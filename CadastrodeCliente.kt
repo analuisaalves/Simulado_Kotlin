@@ -1,82 +1,165 @@
-class Client(
-    val id: Int,
-    var name: String,
-    var birthDate: String,
-    var sex: String,
-    var email: String,
-    var whatsapp: String,
-    var profession: String
+var next_id: Int = 1
+
+val clientes: MutableList<MutableMap<String, String>> = mutableListOf(
+    mutableMapOf(
+        "id" to "1",
+        "nome" to "Fulano da Silva",
+        "dtNasc" to "20/01/1994",
+        "sexo" to "M",
+        "email" to "fulano@dev.com",
+        "whatsapp" to "+5562999990000",
+        "profissao" to "Programador"
+    )
 )
 
-val clients = mutableListOf<Client>()
 
-fun listClients() {
-    println("ID\tName\tBirth Date\tSex\tEmail\tWhatsapp\tProfession")
-    clients.forEachIndexed { index, client ->
-        print("${client.id}\t${client.name}\t${client.birthDate}\t${client.sex}\t${client.email}\t${client.whatsapp}\t${client.profession}\n")
-    }
+fun obterNovoId(): String {
+    next_id += 1
+    return "$next_id"
 }
 
-fun registerClient() {
-    print("Enter the client's name: ")
-    val name = readLine()!!
-    print("Enter the client's birth date: ")
-    val birthDate = readLine()!!
-    print("Enter the client's sex: ")
-    val sex = readLine()!!
-    print("Enter the client's email: ")
-    val email = readLine()!!
-    print("Enter the client's whatsapp: ")
-    val whatsapp = readLine()!!
-    print("Enter the client's profession: ")
-    val profession = readLine()!!
-
-    clients.add(Client(clients.size + 1, name, birthDate, sex, email, whatsapp, profession))
-}
-
-fun alterClient() {
-    print("Enter the client's ID to be altered: ")
-    val id = readLine()!!.toInt()
-    val client = clients.find { it.id == id }
-    if (client != null) {
-        print("Enter the client's new name: ")
-        client.name = readLine()!!
-        print("Enter the client's new birth date: ")
-        client.birthDate = readLine()!!
-        print("Enter the client's new sex: ")
-        client.sex = readLine()!!
-        print("Enter the client's new email: ")
-        client.email = readLine()!!
-        print("Enter the client's new whatsapp: ")
-        client.whatsapp = readLine()!!
-        print("Enter the client's new profession: ")
-        client.profession = readLine()!!
-    } else {
-        println("Client not found.")
-    }
-}
-
-fun deleteClient() {
-    print("Enter the client's ID to be deleted: ")
-    val id = readLine()!!.toInt()
-    val index = clients.indexOfFirst { it.id == id }
-    if (index != -1) {
-        clients.removeAt(index)
-    } else {
-        println("Client not found.")
-    }
-}
-
-fun main() {
-    while (true) {
-        print("1. List clients\n2. Register client\n3. Alter client\n4. Delete client\n5. Exit\nChoose an option: ")
-        when (readLine()!!.toInt()) {
-            1 -> listClients()
-            2 -> registerClient()
-            3 -> alterClient()
-            4 -> deleteClient()
-            5 -> return
-            else -> println("Invalid option.")
+fun obterIndicePeloId(id: String):Int {
+    var cliente_index: Int = -1
+    for ((index, cliente) in clientes.withIndex()){
+        if (cliente["id"] == id){
+            cliente_index = index
+            break
         }
     }
+    return cliente_index
+}
+
+fun obterIndiceCliente(): Int{
+    print("Informe o id do cliente: ")
+    val id = readln()
+    val cliente_index: Int = obterIndicePeloId(id)
+    if(cliente_index == -1){
+        println("Cliente não encontrado!")
+    }
+    return cliente_index
+}
+
+fun mostrarMenu(){
+    println("---- Cadastro de Clientes ----")
+    println("1 - Mostrar clientes")
+    println("2 - Cadastrar cliente")
+    println("3 - Excluir cliente")
+    println("4 - Alterar cliente")
+    println("0 - Sair")
+}
+
+fun mostrarClientes(){
+    println("+---+---------------+-----------+------+---------------+---------------+---------------+")
+    println("| # | Nome          | Dt. Nasc. | Sexo | Email         | Whatsapp      | Profissao     |")
+    println("+---+---------------+-----------+------+---------------+---------------+---------------+")
+    
+    if(clientes.size == 0){
+        println("|                           Nenhum cliente cadastrado!                                 |")
+        println("+--------------------------------------------------------------------------------------+")
+    }else{
+        for (cliente in clientes){
+            val id   = cliente["id"]?.padEnd(3)?.substring(0, 3)
+            val nome   = cliente["nome"]?.padEnd(15)?.substring(0, 15)
+            val dtNasc = cliente["dtNasc"]?.padEnd(11)?.substring(0, 11)
+            val sexo   = cliente["sexo"]?.padEnd(6)?.substring(0, 6)
+            val email  = cliente["email"]?.padEnd(15)?.substring(0, 15)
+            val whatsapp  = cliente["whatsapp"]?.padEnd(15)?.substring(0, 15)
+            val profissao = cliente["profissao"]?.padEnd(15)?.substring(0, 15)
+            println("|$id|$nome|$dtNasc|$sexo|$email|$whatsapp|$profissao|")    
+            println("+---+---------------+-----------+------+---------------+---------------+---------------+")
+        }
+    }
+}
+
+fun mostrarCadastroCliente(){
+    println("---- Cadastro ----")
+
+    print("Nome: ")
+    val nome = readln()
+
+    print("Dt. Nasc (Ex. 20/01/1999): ")
+    val dtNasc = readln()
+
+    print("Sexo (M ou F): ")
+    val sexo = readln()
+
+    print("Email: ")
+    val email = readln()
+
+    print("Whatsapp: ")
+    val whatsapp = readln()
+    
+    print("Profissao: ")
+    val profissao = readln()
+            
+    val novo_id = obterNovoId()
+
+    val cadastro = mutableMapOf(
+        "id" to novo_id,
+        "nome" to nome,
+        "dtNasc" to dtNasc,
+        "sexo" to sexo,
+        "email" to email,
+        "whatsapp" to whatsapp,
+        "profissao" to profissao
+    )
+
+    clientes.add(cadastro)
+    mostrarClientes()
+}
+
+fun mostrarExclusaoCliente(){
+    val cliente_index = obterIndiceCliente()
+    if(cliente_index != -1){
+        val nome = clientes[cliente_index]["nome"]
+        print("Deseja realmente excluir $nome (S ou N)? ")
+        val resposta = readln()
+        if (resposta == "S"){
+            clientes.removeAt(cliente_index)
+            mostrarClientes()
+        }
+    }
+}
+
+fun mostrarAlteracaoCliente(){
+    val cliente_index = obterIndiceCliente()
+    if(cliente_index != -1){
+        println("Informe o campo a ser alterado:")
+        println("1 - Nome")
+        println("2 - Dt. Nasc.")
+        println("3 - Sexo")
+        println("4 - Email")
+        println("5 - Whatsapp")
+        println("6 - profissao")
+        val indice = readln().toInt() - 1
+        val campos = listOf("nome","dtNasc","sexo","email","whatsapp","profissao")
+        val campo: String = campos[indice]
+        
+        print("Informe o novo $campo: ")
+        val valor = readln()
+        
+        clientes[cliente_index][campo] = valor
+
+        mostrarClientes()
+    }
+}
+
+fun main(){
+    do{
+        mostrarMenu()
+        print("Opção: ")
+        var digit = readln()
+        if (digit == ""){
+            digit = "-1"
+        }
+        val opcao: Int = digit.toInt() 
+        when(opcao){
+            1 -> mostrarClientes()
+            2 -> mostrarCadastroCliente()
+            3 -> mostrarExclusaoCliente()
+            4 -> mostrarAlteracaoCliente()
+            0 -> println("Bye")
+            else -> println("Opção inválida!")
+        }
+    }while(opcao != 0)
 }
